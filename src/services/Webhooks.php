@@ -3,8 +3,8 @@
 class VindiWebhooks
 {
   /**
-	 * @var VindiSettings
-	 */
+   * @var VindiSettings
+   */
   private $vindi_settings;
     
   /**
@@ -13,18 +13,18 @@ class VindiWebhooks
   private $routes;
 
   /**
-	 * @param VindiSettings $vindi_settings
-	 */
-	public function __construct(VindiSettings $vindi_settings)
+   * @param VindiSettings $vindi_settings
+   */
+  public function __construct(VindiSettings $vindi_settings)
   {
     $this->vindi_settings = $vindi_settings;
     $this->routes = $vindi_settings->routes;
-	}
+  }
 
-	/**
-	 * Handle incoming webhook.
-	 */
-	public function handle()
+  /**
+   * Handle incoming webhook.
+   */
+  public function handle()
   {
     $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
     $raw_body = file_get_contents('php://input');
@@ -47,7 +47,7 @@ class VindiWebhooks
         die($e->getMessage());
       }
     }
-	}
+  }
 
   /**
    * @param string $token
@@ -370,13 +370,13 @@ class VindiWebhooks
   }
 
   /**
-	 * find orders by bill_id meta
-	 *
-	 * @param int $bill_id
-	 *
-	 * @return WC_Order
-	 */
-	private function find_order_by_bill_id($bill_id)
+   * find orders by bill_id meta
+   *
+   * @param int $bill_id
+   *
+   * @return WC_Order
+   */
+  private function find_order_by_bill_id($bill_id)
   {
     $args = array(
       'post_type' => 'shop_order',
@@ -391,17 +391,17 @@ class VindiWebhooks
       throw new Exception(sprintf(__('Pedido com bill_id #%s não encontrado!', VINDI), $bill_id), 2);
 
     return wc_get_order($query->post->ID);
-	}
+  }
 
   /**
-	 * Query orders containing cycle meta
-	 *
-	 * @param int $subscription_id
-	 * @param int $cycle
-	 *
-	 * @return WC_Order
-	 */
-	private function find_order_by_subscription_and_cycle($subscription_id, $cycle)
+   * Query orders containing cycle meta
+   *
+   * @param int $subscription_id
+   * @param int $cycle
+   *
+   * @return WC_Order
+   */
+  private function find_order_by_subscription_and_cycle($subscription_id, $cycle)
   {
     $query = $this->query_order_by_metas(array(
       array(
@@ -415,15 +415,15 @@ class VindiWebhooks
       throw new Exception(sprintf(__('Pedido da assinatura #%s para o ciclo #%s não encontrado!', VINDI), $subscriptionn_id, $cycle), 2);
 
     return wc_get_order($query->post->ID);
-	}
+  }
 
   /**
-	 * @param int $subscription_id
-	 * @param int $cycle
+   * @param int $subscription_id
+   * @param int $cycle
    *
    * @return boolean
-	 */
-	private function subscription_has_order_in_cycle($subscription_id, $cycle)
+   */
+  private function subscription_has_order_in_cycle($subscription_id, $cycle)
   {
     $query = $this->query_order_by_metas(array(
       array(
@@ -434,33 +434,33 @@ class VindiWebhooks
     ));
 
     return $query->have_posts();
-	}
+  }
 
   /**
-	 * @param array $metas
+   * @param array $metas
    *
    * @return WP_Query
-	 */
-	private function query_order_by_metas(array $metas)
+   */
+  private function query_order_by_metas(array $metas)
   {
     $args = array(
-			'post_type' => 'shop_order',
+      'post_type' => 'shop_order',
       'meta_query' => $metas,
-			'post_status' => 'any',
-		);
+      'post_status' => 'any',
+    );
 
     return new WP_Query($args);
-	}
+  }
 
-	/**
-	 * Update next payment schedule of subscription
-	 *
-	 * @param $data object
-	 */
+  /**
+   * Update next payment schedule of subscription
+   *
+   * @param $data object
+   */
   private function update_next_payment($data)
   {
-		// let's find the subscription in the API
-		// we need this step because the actual next billing date does not come from the /bill webhook
+    // let's find the subscription in the API
+    // we need this step because the actual next billing date does not come from the /bill webhook
     $vindi_subscription = $this->routes->getSubscription($data->bill->subscription->id);
 
     if ($vindi_subscription && isset($vindi_subscription['next_billing_at'])) {

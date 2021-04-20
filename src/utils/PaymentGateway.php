@@ -264,37 +264,37 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
   }
 
   /**
-	 * Get refund request args.
-	 *
-	 * @param  int      $bill_id Order object.
-	 * @param  float    $amount Refund amount.
-	 * @param  string   $reason Refund reason.
-	 * @return array
-	 */
-	public function get_refund_request($bill_id, $amount = null, $reason = '') {
+   * Get refund request args.
+   *
+   * @param  int      $bill_id Order object.
+   * @param  float    $amount Refund amount.
+   * @param  string   $reason Refund reason.
+   * @return array
+   */
+  public function get_refund_request($bill_id, $amount = null, $reason = '') {
     $bill_id = filter_var($bill_id, FILTER_SANITIZE_NUMBER_INT);
     $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_FLOAT);
     $reason = sanitize_text_field($reason);
-		$request = array(
+    $request = array(
             'cancel_bill' => true,
             'comments' => strip_tags(wc_trim_string($reason, 255)),
             'amount' => null
-		);
-		if (!is_null($amount) ) {
-			$request['amount'] = substr($amount, 0, strlen($amount)-2) . "." . substr($amount, -2);
-		}
-		return apply_filters('vindi_refund_request', $request, $bill_id, $request['amount'], $reason);
+    );
+    if (!is_null($amount) ) {
+      $request['amount'] = substr($amount, 0, strlen($amount)-2) . "." . substr($amount, -2);
+    }
+    return apply_filters('vindi_refund_request', $request, $bill_id, $request['amount'], $reason);
   }
 
   /**
-	 * Refund an order via PayPal.
-	 *
-	 * @param  int      $bill_id Order object.
-	 * @param  float    $amount Refund amount.
-	 * @param  string   $reason Refund reason.
-	 * @return object Either an object of name value pairs for a success, or a WP_ERROR object.
-	 */
-	public function refund_transaction($bill_id, $amount = null, $reason = '') {
+   * Refund an order via PayPal.
+   *
+   * @param  int      $bill_id Order object.
+   * @param  float    $amount Refund amount.
+   * @param  string   $reason Refund reason.
+   * @return object Either an object of name value pairs for a success, or a WP_ERROR object.
+   */
+  public function refund_transaction($bill_id, $amount = null, $reason = '') {
     $bill_id = filter_var($bill_id, FILTER_SANITIZE_NUMBER_INT);
     $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_FLOAT);
     $reason = sanitize_text_field($reason);
@@ -304,11 +304,11 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
     $charge_id = $last_charge['id'];
     $refund = $this->routes->refundCharge($charge_id, $data);
 
-		if (empty($refund)) {
+    if (empty($refund)) {
             return new WP_Error('error', __('Reembolso na Vindi falhou. Verifique o log do plugin', VINDI));
-		}
+    }
 
-		return $refund['last_transaction'];
+    return $refund['last_transaction'];
   }
 
   private function find_bill_last_charge($bill_id)
@@ -322,5 +322,5 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
 
     $charges = $bill['charges'];
     return end($charges);
-	}
+  }
 };
