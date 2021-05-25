@@ -764,12 +764,20 @@ class VindiPaymentProcessor
     {
         $item = array(
             'product_id' => $order_item['vindi_id'],
-            'quantity' => $order_item['qty'],
+            'quantity' => ceil($order_item['qty']),
             'pricing_schema' => array(
                 'price' => $order_item['price'],
                 'schema_type' => 'per_unit',
             ),
         );
+        
+        if(!is_int($order_item['qty'])){
+            $item = array(
+                'product_id'        => $order_item['vindi_id'],
+                'amount'          => $order_item['price'] * $order_item['qty']
+            );
+        }
+        
 
         if (
             'discount' == $order_item['type'] || 'shipping' == $order_item['type'] ||
